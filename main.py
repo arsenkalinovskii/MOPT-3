@@ -6,19 +6,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from utils import *
+from graphics import *
 from functions import *
 from optimizers import *
-
-EPS = 1e-8
-MAX_ITER = 100000
-
-X0_QUAD = np.array([5.0, 5.0])
-
-START_POINTS = [
-    np.array([-4.0, -4.0]),
-    np.array([0.0, 0.0]),
-    np.array([4.0, 4.0])
-]
 
 METHODS = {
     'Momentum': Momentum,
@@ -29,126 +20,249 @@ METHODS = {
     'Adam': Adam
 }
 
-PARAMS = {
-    'Momentum': {
-        'lr': [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
-        'beta': [0.5, 0.7, 0.8, 0.9, 0.99]
-    },
-    'Nesterov': {
-        'lr': [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
-        'beta': [0.5, 0.7, 0.8, 0.9, 0.99]
-    },
-    'AdaGrad': {
-        'lr': [1e-4, 5e-4, 1e-3, 5e-3, 1e-2]
-    },
-    'RMSProp': {
-        'lr': [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
-        'rho': [0.5, 0.7, 0.8, 0.9, 0.99]
-    },
-    'AdaDelta': {
-        'rho': [0.5, 0.7, 0.8, 0.9, 0.99]
-    },
-    'Adam': {
-        'beta1': [0.5, 0.7, 0.8, 0.9, 0.99],
-        'beta2': [0.9, 0.95, 0.99, 0.995, 0.999]
-    }
-}
-
-
-def ensure_dir(path):
-    os.makedirs(path, exist_ok=True)
-
-
-def run_optimizer(method, func, x0, **params):
-    try:
-        opt = method(grad=func.grad_f, x0=x0, eps=EPS, max_iter=MAX_ITER, **params)
-        x, path, iters = opt.optimize()
-
-        if np.any(np.isnan(x)):
-            return None
-        if np.any(np.isinf(x)):
-            return None
-
-        return {'x': x, 'path': path, 'iters': iters, 'value': func.f(x)}
-
-    except Exception:
-        return None
-
-
-def save_heatmap(df, title, filename):
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(df, annot=True, fmt='.0f')
-    plt.title(title)
-    plt.tight_layout()
-    plt.savefig(filename)
-    plt.close()
-
-
-def save_lineplot(x, y, xlabel, title, filename):
-    plt.figure(figsize=(8, 5))
-    plt.plot(x, y, marker='o')
-    plt.xlabel(xlabel)
-    plt.ylabel('Iterations')
-    plt.title(title)
-    plt.grid()
-    plt.tight_layout()
-    plt.savefig(filename)
-    plt.close()
-
 
 def task1():
-    base_dir = 'results/task1'
+    for func in [f, g]:
+        func_dir = os.path.join(
+            'task1',
+            func.name.replace(' ', '_')
+        )
 
-    ensure_dir(base_dir)
-    quad_functions = [f, g]
-
-    for func in quad_functions:
-        func_dir = os.path.join(base_dir, func.name.replace(' ', '_'))
         ensure_dir(func_dir)
 
-        for method_name, method in METHODS.items():
-            method_dir = os.path.join(func_dir, method_name)
+    method_dir = os.path.join(func_dir, 'Momentum')
+    ensure_dir(method_dir)
 
-            ensure_dir(method_dir)
-            params = PARAMS[method_name]
+    # Моментум
+    lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
 
-            if len(params) == 1:
-                p_name = list(params.keys())[0]
-                values = params[p_name]
-                rows = []
+    configs = [
+        {'lr': lr, 'beta': 0.9}
+        for lr in lr_values
+    ]
 
-                for value in values:
-                    result = run_optimizer(method, func, X0_QUAD, **{p_name: value})
-                    if result is None:
-                        iters = MAX_ITER
-                    else:
-                        iters = result['iters']
-                    rows.append([value, iters])
+    save_parameter_canvas(
+        func,
+        Momentum,
+        configs,
+        os.path.join(method_dir, 'lr_paths.png')
+    )
 
-                df = pd.DataFrame(rows, columns=[p_name, 'iterations'])
-                df.to_csv(os.path.join(method_dir, 'table.csv'), index=False)
+    beta_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
 
-                save_lineplot(df[p_name], df['iterations'], p_name, f'{method_name} - {func}',
-                              os.path.join(method_dir, 'plot.png'))
+    configs = [
+        {'lr': 0.01, 'beta': beta}
+        for beta in beta_values
+    ]
 
-            else:
-                p1, p2 = list(params.keys())
-                values1 = params[p1]
-                values2 = params[p2]
-                table = []
+    save_parameter_canvas(
+        func,
+        Momentum,
+        configs,
+        os.path.join(method_dir, 'beta_paths.png')
+    )
 
-                for v1 in values1:
-                    row = []
-                    for v2 in values2:
-                        result = run_optimizer(method, func, X0_QUAD, **{p1: v1, p2: v2})
+    save_heatmap_iterations(
+        Momentum,
+        func,
+        'lr',
+        [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
+        'beta',
+        [0.5, 0.7, 0.8, 0.9, 0.99],
+        os.path.join(method_dir, 'heatmap.png')
+    )
 
-                        if result is None:
-                            row.append(MAX_ITER)
-                        else:
-                            row.append(result['iters'])
-                    table.append(row)
+    # Нестеров
+    method_dir = os.path.join(func_dir, 'Nesterov')
+    ensure_dir(method_dir)
 
-                df = pd.DataFrame(table, index=values1, columns=values2)
-                df.to_csv(os.path.join(method_dir, 'table.csv'))
+    configs = [
+        {'lr': lr, 'beta': 0.9}
+        for lr in lr_values
+    ]
 
-                save_heatmap(df, f'{method_name} - {func}', os.path.join(method_dir, 'heatmap.png'))
+    save_parameter_canvas(
+        func,
+        Nesterov,
+        configs,
+        os.path.join(method_dir, 'lr_paths.png')
+    )
+
+    configs = [
+        {'lr': 0.01, 'beta': beta}
+        for beta in beta_values
+    ]
+
+    save_parameter_canvas(
+        func,
+        Nesterov,
+        configs,
+        os.path.join(method_dir, 'beta_paths.png')
+    )
+
+    save_heatmap_iterations(
+        Nesterov,
+        func,
+        'lr',
+        [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
+        'beta',
+        [0.5, 0.7, 0.8, 0.9, 0.99],
+        os.path.join(method_dir, 'heatmap.png')
+    )
+
+    # адаград
+    method_dir = os.path.join(func_dir, 'AdaGrad')
+    ensure_dir(method_dir)
+
+    lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+
+    configs = [
+        {'lr': lr}
+        for lr in lr_values
+    ]
+
+    save_parameter_canvas(
+        func,
+        AdaGrad,
+        configs,
+        os.path.join(method_dir, 'lr_paths.png')
+    )
+
+    save_line_iterations(
+        AdaGrad,
+        func,
+        'lr',
+        lr_values,
+        {},
+        method_dir
+    )
+
+    # RMSProp
+    method_dir = os.path.join(func_dir, 'RMSProp')
+    ensure_dir(method_dir)
+
+    lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+
+    configs = [
+        {'lr': lr, 'rho': 0.9}
+        for lr in lr_values
+    ]
+
+    save_parameter_canvas(
+        func,
+        RMSProp,
+        configs,
+        os.path.join(method_dir, 'lr_paths.png')
+    )
+
+    rho_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+
+    configs = [
+        {'lr': 0.01, 'rho': rho}
+        for rho in rho_values
+    ]
+
+    save_parameter_canvas(
+        func,
+        RMSProp,
+        configs,
+        os.path.join(method_dir, 'rho_paths.png')
+    )
+
+    save_heatmap_iterations(
+        RMSProp,
+        func,
+        'lr',
+        [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
+        'rho',
+        [0.5, 0.7, 0.8, 0.9, 0.99],
+        os.path.join(method_dir, 'heatmap.png')
+    )
+
+    # AdaDelta
+    method_dir = os.path.join(func_dir, 'AdaDelta')
+    ensure_dir(method_dir)
+
+    rho_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+
+    configs = [
+        {'rho': rho}
+        for rho in rho_values
+    ]
+
+    save_parameter_canvas(
+        func,
+        AdaDelta,
+        configs,
+        os.path.join(method_dir, 'rho_paths.png')
+    )
+
+    save_line_iterations(
+        AdaDelta,
+        func,
+        'rho',
+        rho_values,
+        {},
+        method_dir
+    )
+
+    # Adam
+    method_dir = os.path.join(func_dir, 'Adam')
+    ensure_dir(method_dir)
+
+    beta1_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+
+    configs = [
+        {
+            'lr': 0.01,
+            'beta1': beta1,
+            'beta2': 0.999
+        }
+        for beta1 in beta1_values
+    ]
+
+    save_parameter_canvas(
+        func,
+        Adam,
+        configs,
+        os.path.join(method_dir, 'beta1_paths.png')
+    )
+
+    beta2_values = [0.8, 0.9, 0.95, 0.99, 0.995, 0.999]
+
+    configs = [
+        {
+            'lr': 0.01,
+            'beta1': 0.9,
+            'beta2': beta2
+        }
+        for beta2 in beta2_values
+    ]
+
+    save_parameter_canvas(
+        func,
+        Adam,
+        configs,
+        os.path.join(method_dir, 'beta2_paths.png')
+    )
+
+    save_heatmap_iterations(
+        Adam,
+        func,
+        'beta1',
+        [0.5, 0.7, 0.8, 0.9, 0.99],
+        'beta2',
+        [0.9, 0.95, 0.99, 0.995, 0.999],
+        os.path.join(method_dir, 'heatmap.png')
+    )
+
+
+def main():
+    task1()
+    # task2()
+    # task3()
+    # task4()
+
+
+if __name__ == '__main__':
+    main()
