@@ -35,7 +35,7 @@ def grad_g(x):
     return np.array([2 * x[0], 200 * x[1]])
 
 
-g = func(g_func, grad_g, 'Bad', [(0, 0)], (-2, 2))
+g = func(g_func, grad_g, 'Bad', [(0, 0)], (-5, 5))
 
 
 def rosenbrock_func(x):

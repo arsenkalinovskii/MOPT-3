@@ -11,7 +11,6 @@ from optimizers import *
 
 EPS = 1e-8
 MAX_ITER = 100000
-X0_QUAD = np.array([5.0, 5.0])
 
 
 def run_optimizer(method, func, x0, **params):

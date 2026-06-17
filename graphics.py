@@ -66,11 +66,11 @@ def draw_path(func, path, title, filename):
     plt.title(title)
 
 
-def save_parameter_canvas(func, method, configs, filename):
+def save_parameter_canvas(method, func, x0_quad, configs, filename):
     plt.figure(figsize=(14, 8))
 
     for i, params in enumerate(configs):
-        result = run_optimizer(method, func, X0_QUAD, **params)
+        result = run_optimizer(method, func, x0_quad, **params)
 
         plt.subplot(2, 3, i + 1)
 
@@ -89,13 +89,13 @@ def save_parameter_canvas(func, method, configs, filename):
     plt.close()
 
 
-def save_heatmap_iterations(method, func, p1_name, p1_values, p2_name, p2_values, filename):
+def save_heatmap_iterations(method, func, x0_quad, p1_name, p1_values, p2_name, p2_values, filename):
     table = []
 
     for p1 in p1_values:
         row = []
         for p2 in p2_values:
-            result = run_optimizer(method, func, X0_QUAD, **{p1_name: p1, p2_name: p2})
+            result = run_optimizer(method, func, x0_quad, **{p1_name: p1, p2_name: p2})
             if result is None:
                 row.append(MAX_ITER)
             else:
@@ -109,14 +109,14 @@ def save_heatmap_iterations(method, func, p1_name, p1_values, p2_name, p2_values
     save_heatmap(df, f'{func} iterations', filename)
 
 
-def save_line_iterations(method, func, p_name, values, params, dirname):
+def save_line_iterations(method, func, x0_quad, p_name, values, params, dirname):
     rows = []
 
     for value in values:
         cur_params = params.copy()
         cur_params[p_name] = value
 
-        result = run_optimizer(method, func, X0_QUAD, **cur_params)
+        result = run_optimizer(method, func, x0_quad, **cur_params)
 
         if result is None:
             iters = MAX_ITER

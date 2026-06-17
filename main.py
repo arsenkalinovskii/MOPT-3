@@ -30,231 +30,249 @@ def task1():
 
         ensure_dir(func_dir)
 
-    method_dir = os.path.join(func_dir, 'Momentum')
-    ensure_dir(method_dir)
+        method_dir = os.path.join(func_dir, 'Momentum')
+        ensure_dir(method_dir)
 
-    # Моментум
-    lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+        x0_quad = (-4, 4)
 
-    configs = [
-        {'lr': lr, 'beta': 0.9}
-        for lr in lr_values
-    ]
+        # Моментум
+        lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
 
-    save_parameter_canvas(
-        func,
-        Momentum,
-        configs,
-        os.path.join(method_dir, 'lr_paths.png')
-    )
+        configs = [
+            {'lr': lr, 'beta': 0.9}
+            for lr in lr_values
+        ]
 
-    beta_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+        save_parameter_canvas(
+            Momentum,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'lr_paths.png')
+        )
 
-    configs = [
-        {'lr': 0.01, 'beta': beta}
-        for beta in beta_values
-    ]
+        beta_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
 
-    save_parameter_canvas(
-        func,
-        Momentum,
-        configs,
-        os.path.join(method_dir, 'beta_paths.png')
-    )
+        configs = [
+            {'lr': 0.01, 'beta': beta}
+            for beta in beta_values
+        ]
 
-    save_heatmap_iterations(
-        Momentum,
-        func,
-        'lr',
-        [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
-        'beta',
-        [0.5, 0.7, 0.8, 0.9, 0.99],
-        os.path.join(method_dir, 'heatmap.png')
-    )
+        save_parameter_canvas(
+            Momentum,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'beta_paths.png')
+        )
 
-    # Нестеров
-    method_dir = os.path.join(func_dir, 'Nesterov')
-    ensure_dir(method_dir)
+        save_heatmap_iterations(
+            Momentum,
+            func,
+            x0_quad,
+            'lr',
+            [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
+            'beta',
+            [0.5, 0.7, 0.8, 0.9, 0.99],
+            os.path.join(method_dir, 'heatmap.png')
+        )
 
-    configs = [
-        {'lr': lr, 'beta': 0.9}
-        for lr in lr_values
-    ]
+        # Нестеров
+        method_dir = os.path.join(func_dir, 'Nesterov')
+        ensure_dir(method_dir)
 
-    save_parameter_canvas(
-        func,
-        Nesterov,
-        configs,
-        os.path.join(method_dir, 'lr_paths.png')
-    )
+        configs = [
+            {'lr': lr, 'beta': 0.9}
+            for lr in lr_values
+        ]
 
-    configs = [
-        {'lr': 0.01, 'beta': beta}
-        for beta in beta_values
-    ]
+        save_parameter_canvas(
+            Nesterov,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'lr_paths.png')
+        )
 
-    save_parameter_canvas(
-        func,
-        Nesterov,
-        configs,
-        os.path.join(method_dir, 'beta_paths.png')
-    )
+        configs = [
+            {'lr': 0.01, 'beta': beta}
+            for beta in beta_values
+        ]
 
-    save_heatmap_iterations(
-        Nesterov,
-        func,
-        'lr',
-        [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
-        'beta',
-        [0.5, 0.7, 0.8, 0.9, 0.99],
-        os.path.join(method_dir, 'heatmap.png')
-    )
+        save_parameter_canvas(
+            Nesterov,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'beta_paths.png')
+        )
 
-    # адаград
-    method_dir = os.path.join(func_dir, 'AdaGrad')
-    ensure_dir(method_dir)
+        save_heatmap_iterations(
+            Nesterov,
+            func,
+            x0_quad,
+            'lr',
+            [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
+            'beta',
+            [0.5, 0.7, 0.8, 0.9, 0.99],
+            os.path.join(method_dir, 'heatmap.png')
+        )
 
-    lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+        # адаград
+        method_dir = os.path.join(func_dir, 'AdaGrad')
+        ensure_dir(method_dir)
 
-    configs = [
-        {'lr': lr}
-        for lr in lr_values
-    ]
+        lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
 
-    save_parameter_canvas(
-        func,
-        AdaGrad,
-        configs,
-        os.path.join(method_dir, 'lr_paths.png')
-    )
+        configs = [
+            {'lr': lr}
+            for lr in lr_values
+        ]
 
-    save_line_iterations(
-        AdaGrad,
-        func,
-        'lr',
-        lr_values,
-        {},
-        method_dir
-    )
+        save_parameter_canvas(
+            AdaGrad,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'lr_paths.png')
+        )
 
-    # RMSProp
-    method_dir = os.path.join(func_dir, 'RMSProp')
-    ensure_dir(method_dir)
+        save_line_iterations(
+            AdaGrad,
+            func,
+            x0_quad,
+            'lr',
+            lr_values,
+            {},
+            method_dir
+        )
 
-    lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
+        # RMSProp
+        method_dir = os.path.join(func_dir, 'RMSProp')
+        ensure_dir(method_dir)
 
-    configs = [
-        {'lr': lr, 'rho': 0.9}
-        for lr in lr_values
-    ]
+        lr_values = [1e-4, 5e-4, 1e-3, 5e-3, 1e-2, 5e-2]
 
-    save_parameter_canvas(
-        func,
-        RMSProp,
-        configs,
-        os.path.join(method_dir, 'lr_paths.png')
-    )
+        configs = [
+            {'lr': lr, 'rho': 0.9}
+            for lr in lr_values
+        ]
 
-    rho_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+        save_parameter_canvas(
+            RMSProp,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'lr_paths.png')
+        )
 
-    configs = [
-        {'lr': 0.01, 'rho': rho}
-        for rho in rho_values
-    ]
+        rho_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
 
-    save_parameter_canvas(
-        func,
-        RMSProp,
-        configs,
-        os.path.join(method_dir, 'rho_paths.png')
-    )
+        configs = [
+            {'lr': 0.01, 'rho': rho}
+            for rho in rho_values
+        ]
 
-    save_heatmap_iterations(
-        RMSProp,
-        func,
-        'lr',
-        [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
-        'rho',
-        [0.5, 0.7, 0.8, 0.9, 0.99],
-        os.path.join(method_dir, 'heatmap.png')
-    )
+        save_parameter_canvas(
+            RMSProp,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'rho_paths.png')
+        )
 
-    # AdaDelta
-    method_dir = os.path.join(func_dir, 'AdaDelta')
-    ensure_dir(method_dir)
+        save_heatmap_iterations(
+            RMSProp,
+            func,
+            x0_quad,
+            'lr',
+            [1e-4, 5e-4, 1e-3, 5e-3, 1e-2],
+            'rho',
+            [0.5, 0.7, 0.8, 0.9, 0.99],
+            os.path.join(method_dir, 'heatmap.png')
+        )
 
-    rho_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+        # AdaDelta
+        method_dir = os.path.join(func_dir, 'AdaDelta')
+        ensure_dir(method_dir)
 
-    configs = [
-        {'rho': rho}
-        for rho in rho_values
-    ]
+        rho_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
 
-    save_parameter_canvas(
-        func,
-        AdaDelta,
-        configs,
-        os.path.join(method_dir, 'rho_paths.png')
-    )
+        configs = [
+            {'rho': rho}
+            for rho in rho_values
+        ]
 
-    save_line_iterations(
-        AdaDelta,
-        func,
-        'rho',
-        rho_values,
-        {},
-        method_dir
-    )
+        save_parameter_canvas(
+            AdaDelta,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'rho_paths.png')
+        )
 
-    # Adam
-    method_dir = os.path.join(func_dir, 'Adam')
-    ensure_dir(method_dir)
+        save_line_iterations(
+            AdaDelta,
+            func,
+            x0_quad,
+            'rho',
+            rho_values,
+            {},
+            method_dir
+        )
 
-    beta1_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+        # Adam
+        method_dir = os.path.join(func_dir, 'Adam')
+        ensure_dir(method_dir)
 
-    configs = [
-        {
-            'lr': 0.01,
-            'beta1': beta1,
-            'beta2': 0.999
-        }
-        for beta1 in beta1_values
-    ]
+        beta1_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
 
-    save_parameter_canvas(
-        func,
-        Adam,
-        configs,
-        os.path.join(method_dir, 'beta1_paths.png')
-    )
+        configs = [
+            {
+                'lr': 0.01,
+                'beta1': beta1,
+                'beta2': 0.999
+            }
+            for beta1 in beta1_values
+        ]
 
-    beta2_values = [0.8, 0.9, 0.95, 0.99, 0.995, 0.999]
+        save_parameter_canvas(
+            Adam,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'beta1_paths.png')
+        )
 
-    configs = [
-        {
-            'lr': 0.01,
-            'beta1': 0.9,
-            'beta2': beta2
-        }
-        for beta2 in beta2_values
-    ]
+        beta2_values = [0.8, 0.9, 0.95, 0.99, 0.995, 0.999]
 
-    save_parameter_canvas(
-        func,
-        Adam,
-        configs,
-        os.path.join(method_dir, 'beta2_paths.png')
-    )
+        configs = [
+            {
+                'lr': 0.01,
+                'beta1': 0.9,
+                'beta2': beta2
+            }
+            for beta2 in beta2_values
+        ]
 
-    save_heatmap_iterations(
-        Adam,
-        func,
-        'beta1',
-        [0.5, 0.7, 0.8, 0.9, 0.99],
-        'beta2',
-        [0.9, 0.95, 0.99, 0.995, 0.999],
-        os.path.join(method_dir, 'heatmap.png')
-    )
+        save_parameter_canvas(
+            Adam,
+            func,
+            x0_quad,
+            configs,
+            os.path.join(method_dir, 'beta2_paths.png')
+        )
+
+        save_heatmap_iterations(
+            Adam,
+            func,
+            x0_quad,
+            'beta1',
+            [0.5, 0.7, 0.8, 0.9, 0.99],
+            'beta2',
+            [0.9, 0.95, 0.99, 0.995, 0.999],
+            os.path.join(method_dir, 'heatmap.png')
+        )
 
 
 def main():
