@@ -16,16 +16,17 @@ MAX_ITER = 100000
 def run_optimizer(method, func, x0, **params):
     try:
         opt = method(grad=func.grad_f, x0=x0, eps=EPS, max_iter=MAX_ITER, **params)
-        x, path, iters = opt.optimize()
+        path, iters = opt.optimize()
 
-        if np.any(np.isnan(x)):
-            return None
-        if np.any(np.isinf(x)):
+        path = np.array([i for i in path if not (np.any(np.isnan(i)) or np.any(np.isnan(i)))])
+        if len(path) == 0:
             return None
 
+        x = path[-1]
         return {'x': x, 'path': path, 'iters': iters, 'value': func.f(x)}
 
-    except Exception:
+    except Exception as e:
+        print(method, func, ' - Optimization failed:', e)
         return None
 
 

@@ -11,83 +11,25 @@ from optimizers import *
 from utils import *
 
 
-def run_optimizer(method, func, x0, **params):
-    try:
-        opt = method(grad=func.grad_f, x0=x0, eps=EPS, max_iter=MAX_ITER, **params)
-        x, path, iters = opt.optimize()
-
-        if np.any(np.isnan(x)):
-            return None
-        if np.any(np.isinf(x)):
-            return None
-
-        return {'x': x, 'path': path, 'iters': iters, 'value': func.f(x)}
-
-    except Exception:
-        return None
-
-
 def save_heatmap(df, title, filename):
     plt.figure(figsize=(8, 6))
-
-    sns.heatmap(
-        df,
-        annot=True,
-        fmt='.0f',
-        cmap='viridis'
-    )
-
+    sns.heatmap(df, annot=True, fmt='.0f', cmap='viridis')
     plt.title(title)
-
     plt.tight_layout()
-
-    plt.savefig(
-        filename,
-        dpi=300,
-        bbox_inches='tight'
-    )
-
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
 
 def save_lineplot(x, y, xlabel, title, filename):
     plt.figure(figsize=(8, 5))
-
-    plt.plot(
-        x,
-        y,
-        '-o',
-        color='red',
-        markersize=5,
-        linewidth=1.5
-    )
-
+    plt.plot(x, y, '-o', color='red', markersize=5)
     plt.xlabel(xlabel)
-    plt.ylabel('Function value f(x)')
-
+    plt.yscale('log')
+    plt.ylabel('Iterations')
     plt.title(title)
-
-    plt.grid(
-        True,
-        linestyle='--',
-        alpha=0.5
-    )
-
-    if np.min(y) > 0:
-        if np.max(y) / np.min(y) > 100:
-            plt.yscale('log')
-            plt.ylabel('Function value f(x) (log scale)')
-        elif np.max(y) - np.min(y) < 1e-6:
-            plt.ylim(np.min(y) - 0.1, np.max(y) + 0.1)
-
+    plt.grid(True, linestyle='--', alpha=0.5)
     plt.tight_layout()
-
-    plt.savefig(
-        filename,
-        dpi=300,
-        bbox_inches='tight'
-    )
-
+    plt.savefig(filename, dpi=300, bbox_inches='tight')
     plt.close()
 
 
@@ -110,9 +52,7 @@ def draw_path(func, path, title, filename):
     contours = plt.contour(X, Y, Z, levels=15, cmap='viridis', linewidths=0.8)
 
     plt.clabel(contours, inline=True, fontsize=7, fmt='%1.1f')
-
     plt.plot(path_x, path_y, '-o', color='red', markersize=3)
-
     plt.plot(path_x[0], path_y[0], 'go', markersize=8)
 
     if not np.isnan(path_x[-1]) and not np.isnan(path_y[-1]):
@@ -123,16 +63,13 @@ def draw_path(func, path, title, filename):
 
     plt.xlim(left, right)
     plt.ylim(left, right)
-
     plt.title(title)
-
     plt.xlabel('x')
     plt.ylabel('y')
-
     plt.grid(True, linestyle='--', alpha=0.5)
 
 
-def save_parameter_canvas(method, func, x0_quad, configs, filename):
+def save_parameter_canvas(method, func: Func, x0_quad, configs, filename):
     plt.figure(figsize=(14, 8))
 
     for i, params in enumerate(configs):
@@ -157,16 +94,14 @@ def save_heatmap_iterations(method, func, x0_quad, p1_name, p1_values, p2_name, 
         row = []
         for p2 in p2_values:
             result = run_optimizer(method, func, x0_quad, **{p1_name: p1, p2_name: p2})
-            if result is None:
-                row.append(MAX_ITER)
-            else:
+            if result is not None:
                 row.append(result['iters'])
-
+            else:
+                row.append(MAX_ITER)
         table.append(row)
 
     df = pd.DataFrame(table, index=p1_values, columns=p2_values)
     df.to_csv(filename.replace('.png', '.csv'))
-
     save_heatmap(df, f'{func} iterations', filename)
 
 
@@ -176,19 +111,16 @@ def save_line_iterations(method, func, x0_quad, p_name, values, params, dirname)
     for value in values:
         cur_params = params.copy()
         cur_params[p_name] = value
-
         result = run_optimizer(method, func, x0_quad, **cur_params)
 
-        if result is None:
-            iters = MAX_ITER
-        else:
+        if result is not None:
             iters = result['iters']
-
+        else:
+            iters = MAX_ITER
         rows.append([value, iters])
 
     df = pd.DataFrame(rows, columns=[p_name, 'iterations'])
     df.to_csv(os.path.join(dirname, 'table.csv'), index=False)
-
     save_lineplot(
         df[p_name],
         df['iterations'],

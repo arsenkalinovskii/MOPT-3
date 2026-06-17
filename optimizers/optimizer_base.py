@@ -24,4 +24,4 @@ class OptimizerBase:
             x = self.step(x)
             path.append(x.copy())
 
-        return x, np.array(path), k + 1
+        return np.array(path), k + 1
