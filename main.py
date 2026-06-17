@@ -128,13 +128,12 @@ def task1_ada_delta(func, func_dir):
     method_dir = os.path.join(func_dir, 'AdaDelta')
     ensure_dir(method_dir)
 
-    rho_values = [0.1, 0.3, 0.6, 0.8, 0.9, 0.99]
-    x0_quad = (-4, 4)
-
+    rho_values = [0.9, 0.99, 0.999, 0.9999, 0.99999, 0.999999]
     configs = [
         {'rho': rho}
         for rho in rho_values
     ]
+    x0_quad = (-4, 4)
 
     save_parameter_canvas(AdaDelta, func, x0_quad, configs, os.path.join(method_dir, 'rho_paths.png'))
     save_line_iterations(AdaDelta, func, x0_quad, 'rho', rho_values, {}, method_dir)
@@ -144,7 +143,7 @@ def task1_adam(func, func_dir):
     method_dir = os.path.join(func_dir, 'Adam')
     ensure_dir(method_dir)
 
-    beta1_values = [0.3, 0.5, 0.7, 0.8, 0.9, 0.99]
+    beta1_values = [0.00000001, 0.0001, 0.01, 0.1, 0.3, 0.8]
     x0_quad = (-4, 4)
     configs = [
         {
@@ -157,10 +156,10 @@ def task1_adam(func, func_dir):
 
     save_parameter_canvas(Adam, func, x0_quad, configs, os.path.join(method_dir, 'beta1_paths.png'))
 
-    beta2_values = [0.8, 0.9, 0.95, 0.99, 0.995, 0.999]
+    beta2_values = [0.8, 0.9, 0.95, 0.99, 0.999, 0.99999]
     configs = [
         {
-            'lr': 0.2,
+            'lr': 1,
             'beta1': 0.9,
             'beta2': beta2
         }
@@ -172,14 +171,67 @@ def task1_adam(func, func_dir):
                             func,
                             x0_quad,
                             'beta1',
-                            [0.5, 0.7, 0.8, 0.9, 0.99],
+                            beta1_values,
                             'beta2',
-                            [0.9, 0.95, 0.99, 0.995, 0.999],
+                            beta2_values,
                             os.path.join(method_dir, 'heatmap.png'))
 
 
+def task2():
+    for func in [f, g]:
+        func_dir = os.path.join(
+            'task2',
+            func.name.replace(' ', '_')
+        )
+        ensure_dir(func_dir)
+
+        task2_function(func, func_dir)
+
+
+def task2_function(func, func_dir):
+    x0_quad = (-4, 4)
+
+    methods = [
+        (Momentum, {'lr': 0.005, 'beta': 0.9}),
+        (Nesterov, {'lr': 0.003, 'beta': 0.95}),
+        (AdaGrad, {'lr': 0.8}),
+        (RMSProp, {'lr': 0.5, 'rho': 0.9}),
+        (AdaDelta, {'rho': 0.9999999}),
+        (Adam, {'lr': 1, 'beta1': 0.9, 'beta2': 0.99})
+    ]
+
+    plt.figure(figsize=(14, 8))
+
+    for i, (method, params) in enumerate(methods):
+        name = method.__name__ + " " + str(params)
+
+        plt.subplot(2, 3, i + 1)
+        result = run_optimizer(method, func, x0_quad, **params)
+
+        if result is not None:
+            draw_path(func, result['path'], name, None)
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(func_dir, 'all_methods.png'), dpi=300, bbox_inches='tight')
+    plt.close()
+    rows = []
+
+    for method, params in methods:
+        name = method.__name__ + " " + str(params)
+
+        result = run_optimizer(method, func, x0_quad, **params)
+
+        if result is None:
+            rows.append([name, MAX_ITER, np.nan])
+        else:
+            rows.append([name, result['iters'], result['value']])
+
+    df = pd.DataFrame(rows, columns=['method', 'iterations', 'f(x)'])
+    df.to_csv(os.path.join(func_dir, 'table.csv'), index=False)
+
+
 if __name__ == '__main__':
-    task1()
-    # task2()
+    # task1()
+    task2()
     # task3()
     # task4()

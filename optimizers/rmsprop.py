@@ -16,3 +16,6 @@ class RMSProp(OptimizerBase):
         g = self.grad(x)
         self.g2 = self.rho * self.g2 + (1 - self.rho) * g ** 2
         return x - self.lr * g / (np.sqrt(self.g2) + self.eps_ad)
+
+    def __str__(self):
+        return self.__class__.__name__ + f" (lr={self.lr}, beta={self.rho})"

@@ -16,3 +16,6 @@ class Nesterov(OptimizerBase):
         g = self.grad(y)
         self.v = self.beta * self.v + self.lr * g
         return x - self.v
+
+    def __str__(self):
+        return self.__class__.__name__ + f" (lr={self.lr}, beta={self.beta})"

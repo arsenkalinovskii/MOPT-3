@@ -15,3 +15,6 @@ class Momentum(OptimizerBase):
         g = self.grad(x)
         self.m = self.beta * self.m + g
         return x - self.lr * self.m
+
+    def __str__(self):
+        return self.__class__.__name__ + f" (lr={self.lr}, beta={self.beta})"

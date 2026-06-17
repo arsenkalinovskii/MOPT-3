@@ -21,3 +21,6 @@ class AdaDelta(OptimizerBase):
         self.ex = self.rho * self.ex + (1 - self.rho) * dx ** 2
 
         return x + dx
+
+    def __str__(self):
+        return self.__class__.__name__ + f" (beta={self.rho})"

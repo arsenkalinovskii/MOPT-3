@@ -15,3 +15,6 @@ class AdaGrad(OptimizerBase):
         g = self.grad(x)
         self.g2 += g ** 2
         return x - self.lr * g / (np.sqrt(self.g2) + self.eps_ad)
+
+    def __str__(self):
+        return self.__class__.__name__ + f" (lr={self.lr})"

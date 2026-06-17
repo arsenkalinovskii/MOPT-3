@@ -28,3 +28,6 @@ class Adam(OptimizerBase):
         v_hat = self.v / (1 - self.beta2 ** self.t)
 
         return x - self.lr * m_hat / (np.sqrt(v_hat) + self.eps_ad)
+
+    def __str__(self):
+        return self.__class__.__name__ + f" (lr={self.lr}, beta1={self.beta1}, beta2={self.beta2})"
