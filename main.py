@@ -1,24 +1,14 @@
+from graphics import *
+from utils import *
+from functions import *
+from optimizers import *
+
 import os
 
 import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
-import seaborn as sns
-
-from utils import *
-from graphics import *
-from functions import *
-from optimizers import *
-
-METHODS = {
-    'Momentum': Momentum,
-    'Nesterov': Nesterov,
-    'AdaGrad': AdaGrad,
-    'RMSProp': RMSProp,
-    'AdaDelta': AdaDelta,
-    'Adam': Adam
-}
 
 
 def task1():
@@ -230,8 +220,82 @@ def task2_function(func, func_dir):
     df.to_csv(os.path.join(func_dir, 'table.csv'), index=False)
 
 
+def task3():
+    params = {
+        'Momentum': [
+            {'lr': 0.001, 'beta': 0.7},
+            {'lr': 0.003, 'beta': 0.9},
+            {'lr': 0.005, 'beta': 0.95}
+        ],
+
+        'Nesterov': [
+            {'lr': 0.001, 'beta': 0.7},
+            {'lr': 0.003, 'beta': 0.9},
+            {'lr': 0.005, 'beta': 0.95}
+        ],
+
+        'AdaGrad': [
+            {'lr': 0.1},
+            {'lr': 0.5},
+            {'lr': 1.0}
+        ],
+
+        'RMSProp': [
+            {'lr': 0.05, 'rho': 0.8},
+            {'lr': 0.1, 'rho': 0.9},
+            {'lr': 0.3, 'rho': 0.99}
+        ],
+
+        'AdaDelta': [
+            {'rho': 0.9},
+            {'rho': 0.99},
+            {'rho': 0.99995}
+        ],
+
+        'Adam': [
+            {'lr': 0.01, 'beta1': 0.9, 'beta2': 0.99},
+            {'lr': 0.1, 'beta1': 0.9, 'beta2': 0.99},
+            {'lr': 0.3, 'beta1': 0.95, 'beta2': 0.999}
+        ]
+    }
+
+    functions = [
+        rosenbrock,
+        ackley,
+        himmelblau
+    ]
+
+    start_points = {
+        'Rosenbrock': np.array([(-3, 3), (-2, 3), (-1, 3), (0, 3), (2, 3), (3, 3)]),
+        'Ackley': np.array([(2.5, 2.5), (1.5, 2.5), (0.5, 2.5), (-0.5, 2.5), (-1.5, 2.5), (-2.5, 2.5)]),
+        'Himmelblau': np.array([(2.5, 0), (1.5, 0), (0.5, 0), (-0.5, 0), (-1.5, 0), (-2.5, 0)])
+    }
+
+    for func in functions:
+        func_dir = os.path.join(
+            'task3',
+            func.name.replace(' ', '_')
+        )
+        ensure_dir(func_dir)
+        rows = []
+
+        for method_name, method in METHODS.items():
+            for p_idx, cur_params in enumerate(params[method_name]):
+                for s_idx, x0 in enumerate(start_points[func.name]):
+                    result = run_optimizer(method, func, x0, **cur_params)
+
+                    if result is None:
+                        rows.append([method_name, p_idx, s_idx, str(cur_params), MAX_ITER, np.nan])
+                    else:
+                        rows.append([method_name, p_idx, s_idx, str(cur_params), result['iters'], result['value']])
+
+        pd.DataFrame(
+            rows,
+            columns=['method', 'param_set', 'start_point', 'params', 'iterations', 'f(x)']
+        ).to_csv(os.path.join(func_dir, 'all_results.csv'), index=False)
+
+
 if __name__ == '__main__':
     # task1()
-    task2()
-    # task3()
-    # task4()
+    # task2()
+    task3()

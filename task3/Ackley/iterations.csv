@@ -1,0 +1,7 @@
+method,iterations,f(x)
+"Momentum {'Momentum': {'lr': 0.005, 'beta': 0.9}, 'Nesterov': {'lr': 0.003, 'beta': 0.95}, 'AdaGrad': {'lr': 0.8}, 'RMSProp': {'lr': 0.1, 'rho': 0.9}, 'AdaDelta': {'rho': 0.99995}, 'Adam': {'lr': 0.1, 'beta1': 0.9, 'beta2': 0.99}}",100000,0.037477593760719685
+"Nesterov {'Momentum': {'lr': 0.005, 'beta': 0.9}, 'Nesterov': {'lr': 0.003, 'beta': 0.95}, 'AdaGrad': {'lr': 0.8}, 'RMSProp': {'lr': 0.1, 'rho': 0.9}, 'AdaDelta': {'rho': 0.99995}, 'Adam': {'lr': 0.1, 'beta1': 0.9, 'beta2': 0.99}}",100000,0.007145170973725357
+"AdaGrad {'Momentum': {'lr': 0.005, 'beta': 0.9}, 'Nesterov': {'lr': 0.003, 'beta': 0.95}, 'AdaGrad': {'lr': 0.8}, 'RMSProp': {'lr': 0.1, 'rho': 0.9}, 'AdaDelta': {'rho': 0.99995}, 'Adam': {'lr': 0.1, 'beta1': 0.9, 'beta2': 0.99}}",100000,0.004992142095630925
+"RMSProp {'Momentum': {'lr': 0.005, 'beta': 0.9}, 'Nesterov': {'lr': 0.003, 'beta': 0.95}, 'AdaGrad': {'lr': 0.8}, 'RMSProp': {'lr': 0.1, 'rho': 0.9}, 'AdaDelta': {'rho': 0.99995}, 'Adam': {'lr': 0.1, 'beta1': 0.9, 'beta2': 0.99}}",100000,5.023080940544329
+"AdaDelta {'Momentum': {'lr': 0.005, 'beta': 0.9}, 'Nesterov': {'lr': 0.003, 'beta': 0.95}, 'AdaGrad': {'lr': 0.8}, 'RMSProp': {'lr': 0.1, 'rho': 0.9}, 'AdaDelta': {'rho': 0.99995}, 'Adam': {'lr': 0.1, 'beta1': 0.9, 'beta2': 0.99}}",100000,5.782747111765179
+"Adam {'Momentum': {'lr': 0.005, 'beta': 0.9}, 'Nesterov': {'lr': 0.003, 'beta': 0.95}, 'AdaGrad': {'lr': 0.8}, 'RMSProp': {'lr': 0.1, 'rho': 0.9}, 'AdaDelta': {'rho': 0.99995}, 'Adam': {'lr': 0.1, 'beta1': 0.9, 'beta2': 0.99}}",380,6.559645375627877

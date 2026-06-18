@@ -1,14 +1,12 @@
-import os
+from utils import *
+from functions import *
 
+import os
 import numpy as np
 import pandas as pd
 
 import matplotlib.pyplot as plt
 import seaborn as sns
-
-from functions import *
-from optimizers import *
-from utils import *
 
 
 def save_heatmap(df, title, filename):
@@ -128,3 +126,50 @@ def save_line_iterations(method, func, x0_quad, p_name, values, params, dirname)
         f'{func}',
         os.path.join(dirname, 'lineplot.png')
     )
+
+
+def build_all_methods_plot(func, x0, params, filename):
+    left, right = func.range
+
+    x = np.linspace(left, right, 200)
+    y = np.linspace(left, right, 200)
+
+    X, Y = np.meshgrid(x, y)
+    Z = np.zeros_like(X)
+
+    for i in range(X.shape[0]):
+        for j in range(X.shape[1]):
+            Z[i, j] = func.f(np.array([X[i, j], Y[i, j]]))
+
+    plt.figure(figsize=(10, 8))
+    contours = plt.contour(X, Y, Z, levels=25, cmap='viridis', linewidths=0.8)
+    plt.clabel(contours, inline=True, fontsize=7, fmt='%1.1f')
+
+    for idx, (method_name, method) in enumerate(METHODS.items()):
+        result = run_optimizer(method, func, x0[idx % len(x0)], **params[method_name])
+        if result is None:
+            continue
+
+        path = result['path']
+        plt.plot(path[:, 0], path[:, 1], '-o', markersize=2, label=method_name)
+
+    for i, min_point in enumerate(func.mins):
+        min_point = np.array(min_point)
+        plt.scatter(min_point[0], min_point[1],
+                    s=120, marker='*', color='red',
+                    edgecolors='black', linewidth=1.5,
+                    label='min' if i == 0 else '')
+
+    r = abs(func.range[0])
+    plt.xlim(-r, r)
+    plt.ylim(-r, r)
+
+    plt.title(str(func))
+    plt.xlabel('x')
+    plt.ylabel('y')
+    plt.grid(True, linestyle='--', alpha=0.5)
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig(filename, dpi=300)
+    plt.close()

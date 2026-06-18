@@ -12,10 +12,20 @@ from optimizers import *
 EPS = 1e-8
 MAX_ITER = 100000
 
+METHODS = {
+    'Momentum': Momentum,
+    'Nesterov': Nesterov,
+    'AdaGrad': AdaGrad,
+    'RMSProp': RMSProp,
+    'AdaDelta': AdaDelta,
+    'Adam': Adam
+}
+
 
 def run_optimizer(method, func, x0, **params):
-    try:
+    # try:
         opt = method(grad=func.grad_f, x0=x0, eps=EPS, max_iter=MAX_ITER, **params)
+        print(opt)
         path, iters = opt.optimize()
 
         path = np.array([i for i in path if not (np.any(np.isnan(i)) or np.any(np.isnan(i)))])
@@ -25,9 +35,9 @@ def run_optimizer(method, func, x0, **params):
         x = path[-1]
         return {'x': x, 'path': path, 'iters': iters, 'value': func.f(x)}
 
-    except Exception as e:
-        print(method, func, ' - Optimization failed:', e)
-        return None
+    # except Exception as e:
+    #     print(method, func, ' - Optimization failed:', e)
+    #     return None
 
 
 def ensure_dir(path):
